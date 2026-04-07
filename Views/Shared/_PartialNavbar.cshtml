@@ -5,8 +5,18 @@
             <a asp-controller="Product" asp-action="Index">Products</a>
             <a asp-controller="Cart" asp-action="Index">Cart</a>
             <a asp-controller="Order" asp-action="Checkout">Checkout</a>
-            <a asp-controller="Account" asp-action="Login">Login</a>
-            <a asp-controller="Account" asp-action="Register">Register</a>
+            @if (User.Identity?.IsAuthenticated == true)
+            {
+                <span>Hello, @User.Identity.Name</span>
+                <form asp-controller="Account" asp-action="Logout" method="post" style="display:inline;">
+                    <button type="submit">Logout</button>
+                </form>
+            }
+            else
+            {
+                <a asp-controller="Account" asp-action="Login">Login</a>
+                <a asp-controller="Account" asp-action="Register">Register</a>
+            }
         </nav>
     </div>
 </header>

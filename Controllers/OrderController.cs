@@ -1,4 +1,5 @@
 using Marketeer.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Marketeer.Controllers;
@@ -15,6 +16,7 @@ public class OrderController : Controller
     }
 
     [HttpGet]
+    [Authorize]
     public IActionResult Checkout()
     {
         var cart = _cartService.GetCart();
@@ -27,6 +29,7 @@ public class OrderController : Controller
     }
 
     [HttpPost]
+    [Authorize]
     public IActionResult Checkout(string customerName, string shippingAddress)
     {
         if (string.IsNullOrWhiteSpace(customerName) || string.IsNullOrWhiteSpace(shippingAddress))
@@ -45,6 +48,7 @@ public class OrderController : Controller
     }
 
     [HttpGet]
+    [Authorize]
     public IActionResult Success(int id)
     {
         var order = _orderService.GetById(id);
