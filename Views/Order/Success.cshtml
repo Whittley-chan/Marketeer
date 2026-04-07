@@ -1,0 +1,12 @@
+@model Order
+@{
+    ViewData["Title"] = "Order Success";
+}
+
+<h1>Thank you for your order!</h1>
+<p>Order ID: <strong>#@Model.Id</strong></p>
+<p>Placed on: @Model.CreatedAtUtc.ToLocalTime()</p>
+<p>Ship to: @Model.ShippingAddress</p>
+<p>Total: <strong>$@Model.Total</strong></p>
+
+<a asp-controller="Product" asp-action="Index">Continue Shopping</a>

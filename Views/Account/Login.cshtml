@@ -1,0 +1,22 @@
+@{
+    ViewData["Title"] = "Login";
+}
+
+<h1>Login</h1>
+
+@if (!ViewData.ModelState.IsValid)
+{
+    <div class="alert">Email and password are required.</div>
+}
+
+<form asp-action="Login" method="post" class="stacked-form">
+    <div>
+        <label for="email">Email</label>
+        <input id="email" name="email" type="email" required />
+    </div>
+    <div>
+        <label for="password">Password</label>
+        <input id="password" name="password" type="password" required />
+    </div>
+    <button type="submit">Sign In</button>
+</form>

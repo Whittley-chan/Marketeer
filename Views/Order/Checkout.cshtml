@@ -1,0 +1,32 @@
+@model Cart
+@{
+    ViewData["Title"] = "Checkout";
+}
+
+<h1>Checkout</h1>
+
+@if (!ViewData.ModelState.IsValid)
+{
+    <div class="alert">Please provide all required details.</div>
+}
+
+<form asp-action="Checkout" method="post" class="stacked-form">
+    <div>
+        <label for="customerName">Full Name</label>
+        <input id="customerName" name="customerName" type="text" required />
+    </div>
+    <div>
+        <label for="shippingAddress">Shipping Address</label>
+        <input id="shippingAddress" name="shippingAddress" type="text" required />
+    </div>
+    <button type="submit">Place Order</button>
+</form>
+
+<h2>Order Summary</h2>
+<ul>
+    @foreach (var item in Model.Items)
+    {
+        <li>@item.Product.Name x @item.Quantity - $@item.LineTotal</li>
+    }
+</ul>
+<p><strong>Total: $@Model.Total</strong></p>

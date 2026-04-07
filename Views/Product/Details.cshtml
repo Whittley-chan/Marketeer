@@ -1,0 +1,16 @@
+@model Product
+@{
+    ViewData["Title"] = "Product Details";
+}
+
+<h1>@Model.Name</h1>
+<p>@Model.Description</p>
+<p>Category: <strong>@Model.Category?.Name</strong></p>
+<p>Price: <strong>$@Model.Price</strong></p>
+
+<form asp-controller="Cart" asp-action="Add" method="post">
+    <input type="hidden" name="productId" value="@Model.Id" />
+    <label for="quantity">Quantity</label>
+    <input id="quantity" type="number" name="quantity" min="1" value="1" />
+    <button type="submit">Add to Cart</button>
+</form>

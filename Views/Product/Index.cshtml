@@ -1,0 +1,40 @@
+@model IEnumerable<Product>
+@{
+    ViewData["Title"] = "Products";
+    var categories = ViewBag.Categories as IEnumerable<Category> ?? Enumerable.Empty<Category>();
+}
+
+<h1>Products</h1>
+
+<form method="get" class="inline-form">
+    <input type="text" name="search" value="@ViewBag.Search" placeholder="Search products..." />
+    <select name="categoryId">
+        <option value="">All categories</option>
+        @foreach (var category in categories)
+        {
+            <option value="@category.Id" selected="@(ViewBag.CategoryId == category.Id)">
+                @category.Name
+            </option>
+        }
+    </select>
+    <button type="submit">Filter</button>
+</form>
+
+<div class="grid">
+    @foreach (var product in Model)
+    {
+        <article class="card">
+            <h3>@product.Name</h3>
+            <p>@product.Description</p>
+            <p><small>@product.Category?.Name</small></p>
+            <p><strong>$@product.Price</strong></p>
+            <div class="actions">
+                <a asp-action="Details" asp-route-id="@product.Id">Details</a>
+                <form asp-controller="Cart" asp-action="Add" method="post">
+                    <input type="hidden" name="productId" value="@product.Id" />
+                    <button type="submit">Add to Cart</button>
+                </form>
+            </div>
+        </article>
+    }
+</div>

@@ -1,0 +1,50 @@
+@model Cart
+@{
+    ViewData["Title"] = "Cart";
+}
+
+<h1>Your Cart</h1>
+
+@if (!Model.Items.Any())
+{
+    <p>Your cart is empty.</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Product</th>
+                <th>Price</th>
+                <th>Qty</th>
+                <th>Total</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.Items)
+            {
+                <tr>
+                    <td>@item.Product.Name</td>
+                    <td>$@item.Product.Price</td>
+                    <td>@item.Quantity</td>
+                    <td>$@item.LineTotal</td>
+                    <td>
+                        <form asp-action="Remove" method="post">
+                            <input type="hidden" name="productId" value="@item.ProductId" />
+                            <button type="submit">Remove</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <p><strong>Grand Total: $@Model.Total</strong></p>
+    <div class="actions">
+        <form asp-action="Clear" method="post">
+            <button type="submit">Clear Cart</button>
+        </form>
+        <a asp-controller="Order" asp-action="Checkout">Proceed to Checkout</a>
+    </div>
+}
