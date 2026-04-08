@@ -1,19 +1,32 @@
 using Marketeer.Data;
 using Marketeer.Models;
 using Marketeer.Services.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace Marketeer.Services.Implementations;
 
 public class CartService : ICartService
 {
     private readonly ApplicationDbContext _context;
+    private readonly IHttpContextAccessor _httpContextAccessor;
 
-    public CartService(ApplicationDbContext context)
+    public CartService(ApplicationDbContext context, IHttpContextAccessor httpContextAccessor)
     {
         _context = context;
+        _httpContextAccessor = httpContextAccessor;
     }
 
-    public Cart GetCart() => _context.Cart;
+    public Cart GetCart()
+    {
+        var userId = ResolveUserId();
+        var items = _context.CartItems
+            .Include(i => i.Product)
+            .Where(i => i.UserId == userId)
+            .OrderBy(i => i.Id)
+            .ToList();
+
+        return new Cart { Items = items };
+    }
 
     public void AddToCart(int productId, int quantity = 1)
     {
@@ -23,11 +36,14 @@ public class CartService : ICartService
             return;
         }
 
-        var existing = _context.Cart.Items.FirstOrDefault(i => i.ProductId == productId);
+        var userId = ResolveUserId();
+        var existing = _context.CartItems
+            .FirstOrDefault(i => i.UserId == userId && i.ProductId == productId);
         if (existing is null)
         {
-            _context.Cart.Items.Add(new CartItem
+            _context.CartItems.Add(new CartItem
             {
+                UserId = userId,
                 ProductId = productId,
                 Product = product,
                 Quantity = quantity
@@ -37,16 +53,43 @@ public class CartService : ICartService
         {
             existing.Quantity += quantity;
         }
+
+        _context.SaveChanges();
     }
 
     public void RemoveFromCart(int productId)
     {
-        var item = _context.Cart.Items.FirstOrDefault(i => i.ProductId == productId);
+        var userId = ResolveUserId();
+        var item = _context.CartItems
+            .FirstOrDefault(i => i.UserId == userId && i.ProductId == productId);
         if (item is not null)
         {
-            _context.Cart.Items.Remove(item);
+            _context.CartItems.Remove(item);
+            _context.SaveChanges();
         }
     }
 
-    public void ClearCart() => _context.Cart.Items.Clear();
+    public void ClearCart()
+    {
+        var userId = ResolveUserId();
+        var items = _context.CartItems.Where(i => i.UserId == userId).ToList();
+        if (items.Count == 0)
+        {
+            return;
+        }
+
+        _context.CartItems.RemoveRange(items);
+        _context.SaveChanges();
+    }
+
+    private string ResolveUserId()
+    {
+        var user = _httpContextAccessor.HttpContext?.User;
+        if (user?.Identity?.IsAuthenticated == true && !string.IsNullOrWhiteSpace(user.Identity.Name))
+        {
+            return user.Identity.Name;
+        }
+
+        return "guest";
+    }
 }

@@ -8,7 +8,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllersWithViews();
 
-builder.Services.AddDbContext<AuthDbContext>(options =>
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
@@ -19,14 +19,13 @@ builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
         options.Password.RequireNonAlphanumeric = false;
         options.Password.RequiredLength = 6;
     })
-    .AddEntityFrameworkStores<AuthDbContext>()
+    .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddDefaultTokenProviders();
 
-// In-memory app state (no real database).
-builder.Services.AddSingleton<ApplicationDbContext>();
-builder.Services.AddSingleton<IProductService, ProductService>();
-builder.Services.AddSingleton<ICartService, CartService>();
-builder.Services.AddSingleton<IOrderService, OrderService>();
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<IProductService, ProductService>();
+builder.Services.AddScoped<ICartService, CartService>();
+builder.Services.AddScoped<IOrderService, OrderService>();
 
 var app = builder.Build();
 
@@ -45,8 +44,8 @@ app.UseAuthorization();
 
 using (var scope = app.Services.CreateScope())
 {
-    var authDb = scope.ServiceProvider.GetRequiredService<AuthDbContext>();
-    authDb.Database.EnsureCreated();
+    var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+    SeedData.Initialize(db);
 }
 
 app.MapControllerRoute(

@@ -1,6 +1,7 @@
 using Marketeer.Data;
 using Marketeer.Models;
 using Marketeer.Services.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace Marketeer.Services.Implementations;
 
@@ -15,7 +16,9 @@ public class ProductService : IProductService
 
     public IEnumerable<Product> GetAll(string? search = null, int? categoryId = null)
     {
-        IEnumerable<Product> query = _context.Products;
+        IQueryable<Product> query = _context.Products
+            .Include(p => p.Category)
+            .AsNoTracking();
 
         if (!string.IsNullOrWhiteSpace(search))
         {
@@ -29,10 +32,16 @@ public class ProductService : IProductService
             query = query.Where(p => p.CategoryId == categoryId.Value);
         }
 
-        return query.OrderBy(p => p.Name);
+        return query.OrderBy(p => p.Name).ToList();
     }
 
-    public Product? GetById(int id) => _context.Products.FirstOrDefault(p => p.Id == id);
+    public Product? GetById(int id) => _context.Products
+        .Include(p => p.Category)
+        .AsNoTracking()
+        .FirstOrDefault(p => p.Id == id);
 
-    public IEnumerable<Category> GetCategories() => _context.Categories.OrderBy(c => c.Name);
+    public IEnumerable<Category> GetCategories() => _context.Categories
+        .AsNoTracking()
+        .OrderBy(c => c.Name)
+        .ToList();
 }

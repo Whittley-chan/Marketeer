@@ -3,6 +3,7 @@ namespace Marketeer.Models;
 public class Order
 {
     public int Id { get; set; }
+    public string UserId { get; set; } = string.Empty;
     public string CustomerName { get; set; } = string.Empty;
     public string ShippingAddress { get; set; } = string.Empty;
     public DateTime CreatedAtUtc { get; set; } = DateTime.UtcNow;

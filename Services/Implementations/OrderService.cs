@@ -1,6 +1,7 @@
 using Marketeer.Data;
 using Marketeer.Models;
 using Marketeer.Services.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace Marketeer.Services.Implementations;
 
@@ -25,7 +26,7 @@ public class OrderService : IOrderService
 
         var order = new Order
         {
-            Id = _context.Orders.Count == 0 ? 1 : _context.Orders.Max(o => o.Id) + 1,
+            UserId = cart.Items.First().UserId,
             CustomerName = customerName,
             ShippingAddress = shippingAddress,
             CreatedAtUtc = DateTime.UtcNow,
@@ -39,11 +40,19 @@ public class OrderService : IOrderService
         };
 
         _context.Orders.Add(order);
+        _context.SaveChanges();
         _cartService.ClearCart();
         return order;
     }
 
-    public Order? GetById(int id) => _context.Orders.FirstOrDefault(o => o.Id == id);
+    public Order? GetById(int id) => _context.Orders
+        .Include(o => o.Items)
+        .AsNoTracking()
+        .FirstOrDefault(o => o.Id == id);
 
-    public IEnumerable<Order> GetAll() => _context.Orders.OrderByDescending(o => o.CreatedAtUtc);
+    public IEnumerable<Order> GetAll() => _context.Orders
+        .Include(o => o.Items)
+        .AsNoTracking()
+        .OrderByDescending(o => o.CreatedAtUtc)
+        .ToList();
 }
