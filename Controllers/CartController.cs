@@ -26,6 +26,13 @@ public class CartController : Controller
     }
 
     [HttpPost]
+    public IActionResult Select(int productId, bool isSelected)
+    {
+        _cartService.SetSelection(productId, isSelected);
+        return RedirectToAction(nameof(Index));
+    }
+
+    [HttpPost]
     public IActionResult Remove(int productId)
     {
         _cartService.RemoveFromCart(productId);

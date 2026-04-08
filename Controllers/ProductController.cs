@@ -32,4 +32,12 @@ public class ProductController : Controller
 
         return View(product);
     }
+
+    [HttpPost]
+    public IActionResult AddReview(int productId, int rating, string comment)
+    {
+        var userId = User.Identity?.Name ?? "guest";
+        _productService.AddReview(productId, rating, comment, userId);
+        return RedirectToAction(nameof(Details), new { id = productId });
+    }
 }

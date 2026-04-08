@@ -7,5 +7,6 @@ public class CartItem
     public int ProductId { get; set; }
     public Product Product { get; set; } = new();
     public int Quantity { get; set; }
+    public bool IsSelectedForCheckout { get; set; } = true;
     public decimal LineTotal => Product.Price * Quantity;
 }

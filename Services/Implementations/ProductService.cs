@@ -18,6 +18,7 @@ public class ProductService : IProductService
     {
         IQueryable<Product> query = _context.Products
             .Include(p => p.Category)
+            .Include(p => p.Reviews)
             .AsNoTracking();
 
         if (!string.IsNullOrWhiteSpace(search))
@@ -37,8 +38,33 @@ public class ProductService : IProductService
 
     public Product? GetById(int id) => _context.Products
         .Include(p => p.Category)
+        .Include(p => p.Reviews.OrderByDescending(r => r.CreatedAtUtc))
         .AsNoTracking()
         .FirstOrDefault(p => p.Id == id);
+
+    public void AddReview(int productId, int rating, string comment, string userId)
+    {
+        if (rating is < 1 or > 5 || string.IsNullOrWhiteSpace(comment))
+        {
+            return;
+        }
+
+        var productExists = _context.Products.Any(p => p.Id == productId);
+        if (!productExists)
+        {
+            return;
+        }
+
+        _context.ProductReviews.Add(new ProductReview
+        {
+            ProductId = productId,
+            Rating = rating,
+            Comment = comment.Trim(),
+            UserId = string.IsNullOrWhiteSpace(userId) ? "guest" : userId
+        });
+
+        _context.SaveChanges();
+    }
 
     public IEnumerable<Category> GetCategories() => _context.Categories
         .AsNoTracking()

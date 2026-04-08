@@ -27,6 +27,8 @@
             <h3>@product.Name</h3>
             <p>@product.Description</p>
             <p><small>@product.Category?.Name</small></p>
+            <p><small>Rating: @(product.AverageRating.ToString("0.0")) / 5 (@product.Reviews.Count review(s))</small></p>
+            <p><small>In stock: @product.AvailableQuantity | Reserved: @product.ReservedQuantity</small></p>
             <p><strong>$@product.Price</strong></p>
             <div class="actions">
                 <a asp-action="Details" asp-route-id="@product.Id">Details</a>

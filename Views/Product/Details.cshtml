@@ -7,10 +7,50 @@
 <p>@Model.Description</p>
 <p>Category: <strong>@Model.Category?.Name</strong></p>
 <p>Price: <strong>$@Model.Price</strong></p>
+<p>Rating: <strong>@Model.AverageRating.ToString("0.0") / 5</strong> (@Model.Reviews.Count review(s))</p>
+<p>Available: <strong>@Model.AvailableQuantity</strong> | Reserved: <strong>@Model.ReservedQuantity</strong></p>
 
 <form asp-controller="Cart" asp-action="Add" method="post">
     <input type="hidden" name="productId" value="@Model.Id" />
     <label for="quantity">Quantity</label>
-    <input id="quantity" type="number" name="quantity" min="1" value="1" />
+    <input id="quantity" type="number" name="quantity" min="1" max="@Model.AvailableQuantity" value="1" />
     <button type="submit">Add to Cart</button>
 </form>
+
+<h2>Ratings & Comments</h2>
+<form asp-action="AddReview" method="post" class="stacked-form">
+    <input type="hidden" name="productId" value="@Model.Id" />
+    <div>
+        <label for="rating">Rating</label>
+        <select id="rating" name="rating" required>
+            <option value="5">5 - Excellent</option>
+            <option value="4">4 - Good</option>
+            <option value="3">3 - Average</option>
+            <option value="2">2 - Poor</option>
+            <option value="1">1 - Bad</option>
+        </select>
+    </div>
+    <div>
+        <label for="comment">Comment</label>
+        <textarea id="comment" name="comment" rows="3" required></textarea>
+    </div>
+    <button type="submit">Submit Review</button>
+</form>
+
+@if (Model.Reviews.Any())
+{
+    <ul>
+        @foreach (var review in Model.Reviews.OrderByDescending(r => r.CreatedAtUtc))
+        {
+            <li>
+                <strong>@review.Rating/5</strong> by @review.UserId
+                <br />
+                @review.Comment
+            </li>
+        }
+    </ul>
+}
+else
+{
+    <p>No reviews yet.</p>
+}

@@ -7,6 +7,15 @@
 <p>Order ID: <strong>#@Model.Id</strong></p>
 <p>Placed on: @Model.CreatedAtUtc.ToLocalTime()</p>
 <p>Ship to: @Model.ShippingAddress</p>
+<p>Delivery Status: <strong>@Model.DeliveryStatus</strong></p>
 <p>Total: <strong>$@Model.Total</strong></p>
+
+<h2>Order Details</h2>
+<ul>
+    @foreach (var item in Model.Items)
+    {
+        <li>@item.ProductName x @item.Quantity - $@item.LineTotal</li>
+    }
+</ul>
 
 <a asp-controller="Product" asp-action="Index">Continue Shopping</a>

@@ -19,7 +19,7 @@ public class OrderController : Controller
     [Authorize]
     public IActionResult Checkout()
     {
-        var cart = _cartService.GetCart();
+        var cart = _cartService.GetSelectedCart();
         if (!cart.Items.Any())
         {
             return RedirectToAction("Index", "Cart");
@@ -35,7 +35,7 @@ public class OrderController : Controller
         if (string.IsNullOrWhiteSpace(customerName) || string.IsNullOrWhiteSpace(shippingAddress))
         {
             ModelState.AddModelError(string.Empty, "Name and shipping address are required.");
-            return View(_cartService.GetCart());
+            return View(_cartService.GetSelectedCart());
         }
 
         var order = _orderService.PlaceOrder(customerName, shippingAddress);

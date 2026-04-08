@@ -28,10 +28,24 @@ public class CartService : ICartService
         return new Cart { Items = items };
     }
 
+    public Cart GetSelectedCart()
+    {
+        var cart = GetCart();
+        return new Cart
+        {
+            Items = cart.Items.Where(i => i.IsSelectedForCheckout).ToList()
+        };
+    }
+
     public void AddToCart(int productId, int quantity = 1)
     {
         var product = _context.Products.FirstOrDefault(p => p.Id == productId);
         if (product is null || quantity <= 0)
+        {
+            return;
+        }
+
+        if (product.AvailableQuantity < quantity)
         {
             return;
         }
@@ -46,14 +60,34 @@ public class CartService : ICartService
                 UserId = userId,
                 ProductId = productId,
                 Product = product,
-                Quantity = quantity
+                Quantity = quantity,
+                IsSelectedForCheckout = true
             });
         }
         else
         {
-            existing.Quantity += quantity;
+            var nextQuantity = existing.Quantity + quantity;
+            if (product.AvailableQuantity < nextQuantity)
+            {
+                return;
+            }
+
+            existing.Quantity = nextQuantity;
         }
 
+        _context.SaveChanges();
+    }
+
+    public void SetSelection(int productId, bool isSelected)
+    {
+        var userId = ResolveUserId();
+        var item = _context.CartItems.FirstOrDefault(i => i.UserId == userId && i.ProductId == productId);
+        if (item is null)
+        {
+            return;
+        }
+
+        item.IsSelectedForCheckout = isSelected;
         _context.SaveChanges();
     }
 
@@ -69,10 +103,16 @@ public class CartService : ICartService
         }
     }
 
-    public void ClearCart()
+    public void ClearCart(bool selectedOnly = false)
     {
         var userId = ResolveUserId();
-        var items = _context.CartItems.Where(i => i.UserId == userId).ToList();
+        var query = _context.CartItems.Where(i => i.UserId == userId);
+        if (selectedOnly)
+        {
+            query = query.Where(i => i.IsSelectedForCheckout);
+        }
+
+        var items = query.ToList();
         if (items.Count == 0)
         {
             return;

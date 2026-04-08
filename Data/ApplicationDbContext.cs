@@ -8,6 +8,7 @@ public class ApplicationDbContext : IdentityDbContext
 {
     public DbSet<Category> Categories => Set<Category>();
     public DbSet<Product> Products => Set<Product>();
+    public DbSet<ProductReview> ProductReviews => Set<ProductReview>();
     public DbSet<CartItem> CartItems => Set<CartItem>();
     public DbSet<Order> Orders => Set<Order>();
     public DbSet<OrderItem> OrderItems => Set<OrderItem>();
@@ -31,6 +32,12 @@ public class ApplicationDbContext : IdentityDbContext
             .HasOne(ci => ci.Product)
             .WithMany()
             .HasForeignKey(ci => ci.ProductId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        builder.Entity<ProductReview>()
+            .HasOne(pr => pr.Product)
+            .WithMany(p => p.Reviews)
+            .HasForeignKey(pr => pr.ProductId)
             .OnDelete(DeleteBehavior.Cascade);
 
         builder.Entity<OrderItem>()

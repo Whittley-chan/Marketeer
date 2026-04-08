@@ -22,10 +22,15 @@ public static class SeedData
                 "Description" TEXT NOT NULL,
                 "Price" TEXT NOT NULL,
                 "ImageUrl" TEXT NOT NULL,
+                "AvailableQuantity" INTEGER NOT NULL DEFAULT 0,
+                "ReservedQuantity" INTEGER NOT NULL DEFAULT 0,
                 "CategoryId" INTEGER NOT NULL,
                 CONSTRAINT "FK_Products_Categories_CategoryId" FOREIGN KEY ("CategoryId") REFERENCES "Categories" ("Id") ON DELETE RESTRICT
             );
             """);
+
+        TryExecute(context, """ALTER TABLE "Products" ADD COLUMN "AvailableQuantity" INTEGER NOT NULL DEFAULT 0;""");
+        TryExecute(context, """ALTER TABLE "Products" ADD COLUMN "ReservedQuantity" INTEGER NOT NULL DEFAULT 0;""");
 
         context.Database.ExecuteSqlRaw("""
             CREATE TABLE IF NOT EXISTS "CartItems" (
@@ -33,9 +38,11 @@ public static class SeedData
                 "UserId" TEXT NOT NULL,
                 "ProductId" INTEGER NOT NULL,
                 "Quantity" INTEGER NOT NULL,
+                "IsSelectedForCheckout" INTEGER NOT NULL DEFAULT 1,
                 CONSTRAINT "FK_CartItems_Products_ProductId" FOREIGN KEY ("ProductId") REFERENCES "Products" ("Id") ON DELETE CASCADE
             );
             """);
+        TryExecute(context, """ALTER TABLE "CartItems" ADD COLUMN "IsSelectedForCheckout" INTEGER NOT NULL DEFAULT 1;""");
 
         context.Database.ExecuteSqlRaw("""
             CREATE TABLE IF NOT EXISTS "Orders" (
@@ -43,9 +50,11 @@ public static class SeedData
                 "UserId" TEXT NOT NULL,
                 "CustomerName" TEXT NOT NULL,
                 "ShippingAddress" TEXT NOT NULL,
+                "DeliveryStatus" TEXT NOT NULL DEFAULT 'Pending',
                 "CreatedAtUtc" TEXT NOT NULL
             );
             """);
+        TryExecute(context, """ALTER TABLE "Orders" ADD COLUMN "DeliveryStatus" TEXT NOT NULL DEFAULT 'Pending';""");
 
         context.Database.ExecuteSqlRaw("""
             CREATE TABLE IF NOT EXISTS "OrderItems" (
@@ -56,6 +65,18 @@ public static class SeedData
                 "UnitPrice" TEXT NOT NULL,
                 "Quantity" INTEGER NOT NULL,
                 CONSTRAINT "FK_OrderItems_Orders_OrderId" FOREIGN KEY ("OrderId") REFERENCES "Orders" ("Id") ON DELETE CASCADE
+            );
+            """);
+
+        context.Database.ExecuteSqlRaw("""
+            CREATE TABLE IF NOT EXISTS "ProductReviews" (
+                "Id" INTEGER NOT NULL CONSTRAINT "PK_ProductReviews" PRIMARY KEY AUTOINCREMENT,
+                "ProductId" INTEGER NOT NULL,
+                "UserId" TEXT NOT NULL,
+                "Rating" INTEGER NOT NULL,
+                "Comment" TEXT NOT NULL,
+                "CreatedAtUtc" TEXT NOT NULL,
+                CONSTRAINT "FK_ProductReviews_Products_ProductId" FOREIGN KEY ("ProductId") REFERENCES "Products" ("Id") ON DELETE CASCADE
             );
             """);
 
@@ -82,6 +103,8 @@ public static class SeedData
                 Description = "Ergonomic wireless mouse for daily work.",
                 Price = 24.99m,
                 ImageUrl = "/images/mouse.png",
+                AvailableQuantity = 45,
+                ReservedQuantity = 0,
                 CategoryId = categories.First(c => c.Name == "Accessories").Id
             },
             new()
@@ -90,6 +113,8 @@ public static class SeedData
                 Description = "Compact keyboard with tactile switches.",
                 Price = 79.99m,
                 ImageUrl = "/images/keyboard.png",
+                AvailableQuantity = 30,
+                ReservedQuantity = 0,
                 CategoryId = categories.First(c => c.Name == "Electronics").Id
             },
             new()
@@ -98,6 +123,8 @@ public static class SeedData
                 Description = "Full HD monitor with vibrant display.",
                 Price = 189.99m,
                 ImageUrl = "/images/monitor.png",
+                AvailableQuantity = 20,
+                ReservedQuantity = 0,
                 CategoryId = categories.First(c => c.Name == "Electronics").Id
             },
             new()
@@ -106,11 +133,25 @@ public static class SeedData
                 Description = "Set of 3 ruled notebooks for notes.",
                 Price = 12.50m,
                 ImageUrl = "/images/notebook.png",
+                AvailableQuantity = 100,
+                ReservedQuantity = 0,
                 CategoryId = categories.First(c => c.Name == "Office").Id
             }
         };
 
         context.Products.AddRange(products);
         context.SaveChanges();
+    }
+
+    private static void TryExecute(ApplicationDbContext context, string sql)
+    {
+        try
+        {
+            context.Database.ExecuteSqlRaw(sql);
+        }
+        catch
+        {
+            // Ignore duplicate-column and similar migration-compatibility errors.
+        }
     }
 }
