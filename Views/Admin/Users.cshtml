@@ -1,0 +1,39 @@
+@model IEnumerable<AdminUserViewModel>
+@{
+    ViewData["Title"] = "Admin - Users";
+}
+
+<h1>User Management</h1>
+
+<div class="actions">
+    <a asp-controller="Admin" asp-action="Products">Manage Products</a>
+</div>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Email</th>
+            <th>Role</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var user in Model)
+        {
+            <tr>
+                <td>@user.Email</td>
+                <td>@(user.IsAdmin ? "Admin" : "User")</td>
+                <td class="actions">
+                    <form asp-action="ToggleAdminRole" method="post">
+                        <input type="hidden" name="userId" value="@user.Id" />
+                        <button type="submit">@(user.IsAdmin ? "Remove Admin" : "Make Admin")</button>
+                    </form>
+                    <form asp-action="DeleteUser" method="post">
+                        <input type="hidden" name="userId" value="@user.Id" />
+                        <button type="submit">Delete</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

@@ -46,6 +46,9 @@ using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
     SeedData.Initialize(db);
+    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<IdentityUser>>();
+    SeedData.SeedAdminAsync(roleManager, userManager).GetAwaiter().GetResult();
 }
 
 app.MapControllerRoute(

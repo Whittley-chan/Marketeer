@@ -5,6 +5,10 @@
             <a asp-controller="Product" asp-action="Index">Products</a>
             <a asp-controller="Cart" asp-action="Index">Cart</a>
             <a asp-controller="Order" asp-action="Checkout">Checkout</a>
+            @if (User.IsInRole("Admin"))
+            {
+                <a asp-controller="Admin" asp-action="Products">Admin</a>
+            }
             @if (User.Identity?.IsAuthenticated == true)
             {
                 <span>Hello, @User.Identity.Name</span>

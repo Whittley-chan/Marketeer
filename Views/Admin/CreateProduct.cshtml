@@ -1,0 +1,45 @@
+@model AdminProductViewModel
+@{
+    ViewData["Title"] = "Admin - Create Product";
+    var categories = ViewBag.Categories as IEnumerable<Category> ?? Enumerable.Empty<Category>();
+}
+
+<h1>Create Product</h1>
+
+<form asp-action="CreateProduct" method="post" class="stacked-form">
+    <div>
+        <label asp-for="Name"></label>
+        <input asp-for="Name" />
+    </div>
+    <div>
+        <label asp-for="Description"></label>
+        <textarea asp-for="Description" rows="3"></textarea>
+    </div>
+    <div>
+        <label asp-for="Price"></label>
+        <input asp-for="Price" type="number" step="0.01" />
+    </div>
+    <div>
+        <label asp-for="ImageUrl"></label>
+        <input asp-for="ImageUrl" />
+    </div>
+    <div>
+        <label asp-for="CategoryId">Category</label>
+        <select asp-for="CategoryId">
+            <option value="">Select category</option>
+            @foreach (var category in categories)
+            {
+                <option value="@category.Id">@category.Name</option>
+            }
+        </select>
+    </div>
+    <div>
+        <label asp-for="AvailableQuantity"></label>
+        <input asp-for="AvailableQuantity" type="number" />
+    </div>
+    <div>
+        <label asp-for="ReservedQuantity"></label>
+        <input asp-for="ReservedQuantity" type="number" />
+    </div>
+    <button type="submit">Create</button>
+</form>

@@ -1,4 +1,5 @@
 using Marketeer.Models;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace Marketeer.Data;
@@ -141,6 +142,42 @@ public static class SeedData
 
         context.Products.AddRange(products);
         context.SaveChanges();
+    }
+
+    public static async Task SeedAdminAsync(
+        RoleManager<IdentityRole> roleManager,
+        UserManager<IdentityUser> userManager)
+    {
+        const string adminRole = "Admin";
+        const string adminEmail = "admin@marketeer.local";
+        const string adminPassword = "Admin123!";
+
+        if (!await roleManager.RoleExistsAsync(adminRole))
+        {
+            await roleManager.CreateAsync(new IdentityRole(adminRole));
+        }
+
+        var admin = await userManager.FindByEmailAsync(adminEmail);
+        if (admin is null)
+        {
+            admin = new IdentityUser
+            {
+                UserName = adminEmail,
+                Email = adminEmail,
+                EmailConfirmed = true
+            };
+
+            var createResult = await userManager.CreateAsync(admin, adminPassword);
+            if (!createResult.Succeeded)
+            {
+                return;
+            }
+        }
+
+        if (!await userManager.IsInRoleAsync(admin, adminRole))
+        {
+            await userManager.AddToRoleAsync(admin, adminRole);
+        }
     }
 
     private static void TryExecute(ApplicationDbContext context, string sql)
