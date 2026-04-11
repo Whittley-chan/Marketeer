@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Marketeer.Data;
 
-public class ApplicationDbContext : IdentityDbContext
+public class ApplicationDbContext : IdentityDbContext<User>
 {
     public DbSet<Category> Categories => Set<Category>();
     public DbSet<Product> Products => Set<Product>();

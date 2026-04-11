@@ -1,4 +1,6 @@
+using Marketeer.Controllers;
 using Marketeer.Data;
+using Marketeer.Models;
 using Marketeer.Services.Implementations;
 using Marketeer.Services.Interfaces;
 using Microsoft.AspNetCore.Identity;
@@ -11,7 +13,7 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
+builder.Services.AddIdentity<User, IdentityRole>(options =>
     {
         options.Password.RequireDigit = false;
         options.Password.RequireLowercase = true;
@@ -47,8 +49,8 @@ using (var scope = app.Services.CreateScope())
     var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
     SeedData.Initialize(db);
     var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
-    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<IdentityUser>>();
-    SeedData.SeedAdminAsync(roleManager, userManager).GetAwaiter().GetResult();
+    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<User>>();
+    AdminController.SeedAdminAsync(roleManager, userManager).GetAwaiter().GetResult();
 }
 
 app.MapControllerRoute(

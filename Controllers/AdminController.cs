@@ -11,9 +11,9 @@ namespace Marketeer.Controllers;
 public class AdminController : Controller
 {
     private readonly ApplicationDbContext _context;
-    private readonly UserManager<IdentityUser> _userManager;
+    private readonly UserManager<User> _userManager;
 
-    public AdminController(ApplicationDbContext context, UserManager<IdentityUser> userManager)
+    public AdminController(ApplicationDbContext context, UserManager<User> userManager)
     {
         _context = context;
         _userManager = userManager;
@@ -191,5 +191,41 @@ public class AdminController : Controller
         _context.Products.Remove(product);
         _context.SaveChanges();
         return RedirectToAction(nameof(Products));
+    }
+
+    public static async Task SeedAdminAsync(
+        RoleManager<IdentityRole> roleManager,
+        UserManager<User> userManager)
+    {
+        const string adminRole = "Admin";
+        const string adminEmail = "admin@marketeer.local";
+        const string adminPassword = "Admin123!";
+
+        if (!await roleManager.RoleExistsAsync(adminRole))
+        {
+            await roleManager.CreateAsync(new IdentityRole(adminRole));
+        }
+
+        var admin = await userManager.FindByEmailAsync(adminEmail);
+        if (admin is null)
+        {
+            admin = new User
+            {
+                UserName = adminEmail,
+                Email = adminEmail,
+                EmailConfirmed = true
+            };
+
+            var createResult = await userManager.CreateAsync(admin, adminPassword);
+            if (!createResult.Succeeded)
+            {
+                return;
+            }
+        }
+
+        if (!await userManager.IsInRoleAsync(admin, adminRole))
+        {
+            await userManager.AddToRoleAsync(admin, adminRole);
+        }
     }
 }
