@@ -10,4 +10,6 @@ public class Order
     public DateTime CreatedAtUtc { get; set; } = DateTime.UtcNow;
     public List<OrderItem> Items { get; set; } = new();
     public decimal Total => Items.Sum(i => i.LineTotal);
+
+        
 }

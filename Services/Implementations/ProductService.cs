@@ -13,19 +13,17 @@ public class ProductService : IProductService
     {
         _context = context;
     }
-
-    public IEnumerable<Product> GetAll(string? search = null, int? categoryId = null)
+    public IEnumerable<Product> GetAll(string? search, int? categoryId)
     {
-        IQueryable<Product> query = _context.Products
-            .Include(p => p.Category)
-            .Include(p => p.Reviews)
-            .AsNoTracking();
+        var query = _context.Products.AsQueryable();
 
-        if (!string.IsNullOrWhiteSpace(search))
+        if (!string.IsNullOrEmpty(search))
         {
+            var keyword = search.ToLower();
+
             query = query.Where(p =>
-                p.Name.Contains(search, StringComparison.OrdinalIgnoreCase) ||
-                p.Description.Contains(search, StringComparison.OrdinalIgnoreCase));
+                p.Name.ToLower().Contains(keyword) ||
+                (p.Description != null && p.Description.ToLower().Contains(keyword)));
         }
 
         if (categoryId.HasValue)
@@ -33,9 +31,8 @@ public class ProductService : IProductService
             query = query.Where(p => p.CategoryId == categoryId.Value);
         }
 
-        return query.OrderBy(p => p.Name).ToList();
+        return query; 
     }
-
     public Product? GetById(int id) => _context.Products
         .Include(p => p.Category)
         .Include(p => p.Reviews.OrderByDescending(r => r.CreatedAtUtc))
