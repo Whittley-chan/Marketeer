@@ -1,0 +1,39 @@
+@using System.Linq
+@model IEnumerable<Order>
+@{
+    ViewData["Title"] = "My Orders";
+}
+
+<h1>My Orders</h1>
+
+@if (!Model.Any())
+{
+    <p>You haven't placed any orders yet.</p>
+    <a asp-controller="Product" asp-action="Index" class="btn">Start Shopping</a>
+}
+else
+{
+    <div class="grid">
+        @foreach (var order in Model)
+        {
+            <div class="card">
+                <h3>Order #@order.Id</h3>
+                <p><strong>Customer:</strong> @order.CustomerName</p>
+                <p><strong>Shipping Address:</strong> @order.ShippingAddress</p>
+                <p><strong>Status:</strong> @order.DeliveryStatus</p>
+                <p><strong>Date:</strong> @order.CreatedAtUtc.ToLocalTime().ToString("g")</p>
+                <p><strong>Total:</strong> $@order.Total.ToString("F2")</p>
+
+                <h4>Items:</h4>
+                <ul>
+                    @foreach (var item in order.Items.OrderBy(i => i.ProductName))
+                    {   
+                        <li>@item.Quantity x @item.ProductName - $@item.LineTotal.ToString("F2")</li>
+                    }
+                </ul>
+
+                <a asp-action="Success" asp-route-id="@order.Id" class="btn">View Details</a>
+            </div>
+        }
+    </div>
+}

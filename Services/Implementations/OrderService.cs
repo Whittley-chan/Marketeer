@@ -71,6 +71,11 @@ public class OrderService : IOrderService
     public IEnumerable<Order> GetAll() => _context.Orders
         .Include(o => o.Items)
         .AsNoTracking()
-        .OrderByDescending(o => o.CreatedAtUtc)
+        .ToList();
+
+    public IEnumerable<Order> GetByUserId(string userId) => _context.Orders
+        .Where(o => o.UserId == userId)
+        .Include(o => o.Items)
+        .AsNoTracking()
         .ToList();
 }

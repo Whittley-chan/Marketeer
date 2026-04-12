@@ -1,9 +1,12 @@
+@inject Microsoft.AspNetCore.Identity.UserManager<Marketeer.Models.User> UserManager
+
 <header class="navbar">
     <div class="container nav-content">
         <a class="brand" asp-controller="Home" asp-action="Index">Marketeer</a>
         <nav>
             <a asp-controller="Product" asp-action="Index">Products</a>
             <a asp-controller="Cart" asp-action="Index">Cart</a>
+            <a asp-controller="Order" asp-action="MyOrders">My Orders</a>
             <a asp-controller="Order" asp-action="Checkout">Checkout</a>
             @if (User.IsInRole("Admin"))
             {
@@ -11,7 +14,7 @@
             }
             @if (User.Identity?.IsAuthenticated == true)
             {
-                <span>Hello, @User.Identity.Name</span>
+                <span>Hello, @(UserManager.GetUserAsync(User).Result?.FullName ?? User.Identity.Name)</span>
                 <form asp-controller="Account" asp-action="Logout" method="post" style="display:inline;">
                     <button type="submit">Logout</button>
                 </form>

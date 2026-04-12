@@ -59,4 +59,19 @@ public class OrderController : Controller
 
         return View(order);
     }
+
+    [HttpGet]
+    [Authorize]
+    public IActionResult MyOrders()
+    {
+        var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+        if (string.IsNullOrEmpty(userId))
+        {
+            return RedirectToAction("Login", "Account");
+        }
+
+        var orders = _orderService.GetByUserId(userId)
+            .OrderByDescending(o => o.CreatedAtUtc);
+        return View(orders);
+    }
 }

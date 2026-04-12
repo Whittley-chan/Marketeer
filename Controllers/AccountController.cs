@@ -86,6 +86,7 @@ public class AccountController : Controller
 
         var user = new User
         {
+            FullName = fullName,
             UserName = email,
             Email = email
         };

@@ -125,9 +125,13 @@ public class CartService : ICartService
     private string ResolveUserId()
     {
         var user = _httpContextAccessor.HttpContext?.User;
-        if (user?.Identity?.IsAuthenticated == true && !string.IsNullOrWhiteSpace(user.Identity.Name))
+        if (user?.Identity?.IsAuthenticated == true)
         {
-            return user.Identity.Name;
+            var userId = user.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            if (!string.IsNullOrWhiteSpace(userId))
+            {
+                return userId;
+            }
         }
 
         return "guest";
