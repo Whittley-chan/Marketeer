@@ -3,21 +3,39 @@
     ViewData["Title"] = "Home";
 }
 
-<section>
+<section class="hero">
     <h1>Welcome to Marketeer</h1>
-    <p>A demo marketplace built with ASP.NET Core MVC.</p>
+    <p>A modern demo marketplace built with ASP.NET Core MVC.</p>
+    <a asp-controller="Product" asp-action="Index" class="btn">
+        Browse Products
+    </a>
 </section>
 
 <section>
     <h2>Featured Products</h2>
-    <div class="grid">
+
+    <div class="grid products-grid">
         @foreach (var product in Model)
         {
-            <article class="card">
+            <article class="card product-card">
+
                 <h3>@product.Name</h3>
-                <p>@product.Description</p>
-                <p><strong>$@product.Price</strong></p>
-                <a asp-controller="Product" asp-action="Details" asp-route-id="@product.Id">View details</a>
+
+                <p class="desc">
+                    @product.Description
+                </p>
+
+                <p class="price">
+                    $@product.Price
+                </p>
+
+                <a asp-controller="Product"
+                   asp-action="Details"
+                   asp-route-id="@product.Id"
+                   class="btn">
+                    View Details
+                </a>
+
             </article>
         }
     </div>

@@ -6,8 +6,13 @@
 <h1>Product Management</h1>
 
 <div class="actions">
-    <a asp-action="CreateProduct">Create Product</a>
-    <a asp-action="Users">Manage Users</a>
+    <a asp-action="CreateProduct" class="btn btn-primary">
+        + Create Product
+    </a>
+
+    <a asp-action="Users" class="btn btn-secondary">
+        Manage Users
+    </a>
 </div>
 
 <table class="table">
@@ -31,10 +36,14 @@
                 <td>@product.AvailableQuantity</td>
                 <td>@product.ReservedQuantity</td>
                 <td class="actions">
-                    <a asp-action="EditProduct" asp-route-id="@product.Id">Edit</a>
+                    <a asp-action="EditProduct" asp-route-id="@product.Id" class="btn btn-edit">
+                        Edit
+                    </a>
                     <form asp-action="DeleteProduct" method="post">
                         <input type="hidden" name="id" value="@product.Id" />
-                        <button type="submit">Delete</button>
+                        <button type="submit" class="btn btn-danger">
+                            Delete
+                        </button>
                     </form>
                 </td>
             </tr>

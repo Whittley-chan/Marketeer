@@ -3,20 +3,32 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
     <title>@ViewData["Title"] - Marketeer</title>
+
     <link rel="stylesheet" href="~/css/site.css" />
 </head>
+
 <body>
+
+    <!-- Navbar -->
     <partial name="_PartialNavbar" />
-    <main class="container">
+
+    <!-- Main content -->
+    <main class="container main-content">
+
         @if (TempData["Message"] is string message)
         {
-            <div class="alert">@message</div>
+            <div class="alert fade-in">@message</div>
         }
+
         @RenderBody()
+
     </main>
 
+    <!-- Scripts -->
     <script src="~/js/site.js"></script>
     @await RenderSectionAsync("Scripts", required: false)
+
 </body>
 </html>

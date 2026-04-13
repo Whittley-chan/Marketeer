@@ -3,19 +3,38 @@
     ViewData["Title"] = "Order Success";
 }
 
-<h1>Thank you for your order!</h1>
-<p>Order ID: <strong>#@Model.Id</strong></p>
-<p>Placed on: @Model.CreatedAtUtc.ToLocalTime()</p>
-<p>Ship to: @Model.ShippingAddress</p>
-<p>Delivery Status: <strong>@Model.DeliveryStatus</strong></p>
-<p>Total: <strong>$@Model.Total</strong></p>
+<div class="order-success">
 
-<h2>Order Details</h2>
-<ul>
-    @foreach (var item in Model.Items)
-    {
-        <li>@item.ProductName x @item.Quantity - $@item.LineTotal</li>
-    }
-</ul>
+    <div class="card success-card">
+        <h1> Order </h1>
 
-<a asp-controller="Product" asp-action="Index">Continue Shopping</a>
+        <div class="success-info">
+            <p><span>Order ID:</span> #@Model.Id</p>
+            <p><span>Placed on:</span> @Model.CreatedAtUtc.ToLocalTime().ToString("g")</p>
+            <p><span>Ship to:</span> @Model.ShippingAddress</p>
+            <p><span>Status:</span> <strong class="status">@Model.DeliveryStatus</strong></p>
+            <p class="total">Total: $@Model.Total</p>
+        </div>
+    </div>
+
+    <div class="card">
+        <h2>Order Details</h2>
+
+        <ul class="order-items">
+            @foreach (var item in Model.Items)
+            {
+                <li>
+                    <span>@item.ProductName</span>
+                    <span>@item.Quantity x $@item.LineTotal</span>
+                </li>
+            }
+        </ul>
+    </div>
+
+    <div class="actions center">
+        <a asp-controller="Product" asp-action="Index" class="btn">
+            Continue Shopping
+        </a>
+    </div>
+
+</div>

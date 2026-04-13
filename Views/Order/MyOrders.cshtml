@@ -13,26 +13,43 @@
 }
 else
 {
-    <div class="grid">
+    <div class="grid orders-grid">
         @foreach (var order in Model)
         {
-            <div class="card">
-                <h3>Order #@order.Id</h3>
-                <p><strong>Customer:</strong> @order.CustomerName</p>
-                <p><strong>Shipping Address:</strong> @order.ShippingAddress</p>
-                <p><strong>Status:</strong> @order.DeliveryStatus</p>
-                <p><strong>Date:</strong> @order.CreatedAtUtc.ToLocalTime().ToString("g")</p>
-                <p><strong>Total:</strong> $@order.Total.ToString("F2")</p>
+            <div class="card order-card">
 
-                <h4>Items:</h4>
-                <ul>
-                    @foreach (var item in order.Items.OrderBy(i => i.ProductName))
-                    {   
-                        <li>@item.Quantity x @item.ProductName - $@item.LineTotal.ToString("F2")</li>
-                    }
-                </ul>
+                <div class="order-header">
+                    <h3>Order #@order.Id</h3>
+                    <span class="status">@order.DeliveryStatus</span>
+                </div>
 
-                <a asp-action="Success" asp-route-id="@order.Id" class="btn">View Details</a>
+                <div class="order-info">
+                    <p><strong>Customer:</strong> @order.CustomerName</p>
+                    <p><strong>Address:</strong> @order.ShippingAddress</p>
+                    <p><strong>Date:</strong> @order.CreatedAtUtc.ToLocalTime().ToString("g")</p>
+                </div>
+
+                <div class="order-total">
+                    Total: <strong>$@order.Total.ToString("F2")</strong>
+                </div>
+
+                <div class="order-items">
+                    <h4>Items</h4>
+                    <ul>
+                        @foreach (var item in order.Items.OrderBy(i => i.ProductName))
+                        {   
+                            <li>
+                                <span>@item.ProductName</span>
+                                <span>@item.Quantity x $@item.LineTotal.ToString("F2")</span>
+                            </li>
+                        }
+                    </ul>
+                </div>
+
+                <a asp-action="Success" asp-route-id="@order.Id" class="btn">
+                    View Details
+                </a>
+
             </div>
         }
     </div>

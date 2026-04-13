@@ -22,6 +22,10 @@ public class CartController : Controller
     public IActionResult Add(int productId, int quantity = 1)
     {
         _cartService.AddToCart(productId, quantity);
+        if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+        {
+            return Json(new { success = true, message = "Product added to cart" });
+        }
         return RedirectToAction(nameof(Index));
     }
 

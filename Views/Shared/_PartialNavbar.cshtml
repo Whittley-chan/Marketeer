@@ -1,29 +1,50 @@
 @inject Microsoft.AspNetCore.Identity.UserManager<Marketeer.Models.User> UserManager
 
 <header class="navbar">
-    <div class="container nav-content">
-        <a class="brand" asp-controller="Home" asp-action="Index">Marketeer</a>
-        <nav>
+    <div class="container nav-content nav-container">
+
+        <a class="brand" asp-controller="Home" asp-action="Index">
+            Marketeer
+        </a>
+
+        <nav class="nav-links">
             <a asp-controller="Product" asp-action="Index">Products</a>
             <a asp-controller="Cart" asp-action="Index">Cart</a>
             <a asp-controller="Order" asp-action="MyOrders">My Orders</a>
             <a asp-controller="Order" asp-action="Checkout">Checkout</a>
+
             @if (User.IsInRole("Admin"))
             {
-                <a asp-controller="Admin" asp-action="Products">Admin</a>
+                <a asp-controller="Admin" asp-action="Products" class="admin-link">
+                    Admin
+                </a>
             }
+        </nav>
+
+        <div class="nav-user">
             @if (User.Identity?.IsAuthenticated == true)
             {
-                <span>Hello, @(UserManager.GetUserAsync(User).Result?.FullName ?? User.Identity.Name)</span>
-                <form asp-controller="Account" asp-action="Logout" method="post" style="display:inline;">
-                    <button type="submit">Logout</button>
+                <span class="user-name">
+                    👋 @(UserManager.GetUserAsync(User).Result?.FullName ?? User.Identity.Name)
+                </span>
+
+                <form asp-controller="Account" asp-action="Logout" method="post">
+                    <button type="submit" class="btn-logout">
+                        Logout
+                    </button>
                 </form>
             }
             else
             {
-                <a asp-controller="Account" asp-action="Login">Login</a>
-                <a asp-controller="Account" asp-action="Register">Register</a>
+                <a asp-controller="Account" asp-action="Login" class="btn-outline">
+                    Login
+                </a>
+
+                <a asp-controller="Account" asp-action="Register" class="btn-primary">
+                    Register
+                </a>
             }
-        </nav>
+        </div>
+
     </div>
 </header>

@@ -43,7 +43,7 @@ public class AccountController : Controller
         var result = await _signInManager.PasswordSignInAsync(email, password, true, false);
         if (!result.Succeeded)
         {
-            ModelState.AddModelError(string.Empty, "Invalid login attempt.");
+            ModelState.AddModelError(string.Empty, "Email or password is invalid.");
             return View();
         }
 

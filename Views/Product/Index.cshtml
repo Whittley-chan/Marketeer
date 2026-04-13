@@ -32,7 +32,7 @@
             <p><strong>$@product.Price</strong></p>
             <div class="actions">
                 <a asp-action="Details" asp-route-id="@product.Id">Details</a>
-                <form asp-controller="Cart" asp-action="Add" method="post">
+                <form class="addToCartForm" asp-controller="Cart" asp-action="Add" method="post">
                     <input type="hidden" name="productId" value="@product.Id" />
                     <button type="submit">Add to Cart</button>
                 </form>
@@ -40,3 +40,39 @@
         </article>
     }
 </div>
+
+<div id="popupMessage" class="popup-message" style="display: none;"></div>
+
+@section Scripts {
+    <script>
+        document.querySelectorAll('.addToCartForm').forEach(form => {
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const formData = new FormData(this);
+                fetch(this.action, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        showPopup(data.message);
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+            });
+        });
+
+        function showPopup(message) {
+            const popup = document.getElementById('popupMessage');
+            popup.textContent = message;
+            popup.style.display = 'block';
+            setTimeout(() => {
+                popup.style.display = 'none';
+            }, 5000);
+        }
+    </script>
+}
