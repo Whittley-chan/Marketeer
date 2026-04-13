@@ -1,0 +1,58 @@
+@model Marketeer.Models.User
+
+@{
+    ViewData["Title"] = "My Profile";
+}
+
+<div class="card profile-card">
+
+    <h1>My Profile</h1>
+
+    @if (TempData["Message"] != null)
+    {
+        <div class="alert">
+            @TempData["Message"]
+        </div>
+    }
+
+    <div class="profile-info">
+
+        <div class="info-row">
+            <span>Full Name</span>
+            <strong>@Model.FullName</strong>
+        </div>
+
+        <div class="info-row">
+            <span>Email</span>
+            <strong>@Model.Email</strong>
+        </div>
+
+        <div class="info-row">
+            <span>Phone Number</span>
+            <strong>@Model.PhoneNumber</strong>
+        </div>
+
+        <div class="info-row">
+            <span>Date of Birth</span>
+            <strong>@Model.DateOfBirth.ToString("MMMM dd, yyyy")</strong>
+        </div>
+
+        <div class="info-row">
+            <span>Role</span>
+            <strong class="badge">@Model.Role</strong>
+        </div>
+
+        <div class="info-row">
+            <span>Status</span>
+            <strong class="badge status">@Model.Status</strong>
+        </div>
+
+    </div>
+
+    <div class="profile-actions">
+        <a asp-action="EditProfile" class="btn">
+            Edit Profile
+        </a>
+    </div>
+
+</div>

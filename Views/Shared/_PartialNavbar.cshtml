@@ -24,9 +24,9 @@
         <div class="nav-user">
             @if (User.Identity?.IsAuthenticated == true)
             {
-                <span class="user-name">
+                <a asp-controller="Account" asp-action="Profile" class="user-profile-link">
                     👋 @(UserManager.GetUserAsync(User).Result?.FullName ?? User.Identity.Name)
-                </span>
+                </a>
 
                 <form asp-controller="Account" asp-action="Logout" method="post">
                     <button type="submit" class="btn-logout">

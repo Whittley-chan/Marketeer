@@ -1,0 +1,48 @@
+@model Marketeer.Models.User
+
+@{
+    ViewData["Title"] = "Edit Profile";
+}
+
+<div class="card form-card">
+
+    <h1>Edit Profile</h1>
+
+    @if (!ViewData.ModelState.IsValid)
+    {
+        <div class="alert">
+            Please correct the errors below.
+        </div>
+    }
+
+    <form asp-action="EditProfile" method="post" class="stacked-form">
+
+        <div class="form-group">
+            <label for="fullName">Full Name</label>
+            <input id="fullName" name="fullName" type="text" value="@Model.FullName" required />
+        </div>
+
+        <div class="form-group">
+            <label for="email">Email</label>
+            <input id="email" name="email" type="email" value="@Model.Email" required />
+        </div>
+
+        <div class="form-group">
+            <label for="phoneNumber">Phone Number</label>
+            <input id="phoneNumber" name="phoneNumber" type="tel" value="@Model.PhoneNumber" />
+        </div>
+
+        <div class="form-group">
+            <label for="dateOfBirth">Date of Birth</label>
+            <input id="dateOfBirth" name="dateOfBirth" type="date"
+                   value="@Model.DateOfBirth.ToString("yyyy-MM-dd")" />
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn">Save Changes</button>
+            <a asp-action="Profile" class="btn btn-outline">Cancel</a>
+        </div>
+
+    </form>
+
+</div>
